@@ -1,28 +1,27 @@
-name: 📦 CI - Run Tests
+name: 🧪 CI - Run Tests
 
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
-  test:
+  php-tests:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🛎️ Code auschecken
+      - name: 📥 Projekt klonen
         uses: actions/checkout@v3
 
-      - name: 🐘 PHP installieren
+      - name: 🧰 PHP installieren
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.4'
 
-      - name: 📦 Abhängigkeiten installieren (Composer)
-        run: composer install --no-progress --prefer-dist
+      - name: 📦 Composer-Abhängigkeiten installieren
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: ✅ PHP-Dateien auf Syntax prüfen
+        run: find . -type f -name "*.php" -exec php -l {} \;
 
       - name: 🧪 PHPUnit Tests ausführen
         run: ./vendor/bin/phpunit
-
-
