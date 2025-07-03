@@ -1,27 +1,25 @@
 <?php
+// Autoload alle Abhängigkeiten und Klassen
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../src/config.php';
 
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use Mehmalat\ExcelImporter\ExcelImporter;
+// Service und Repository importieren (PSR-4 Autoloading)
+use Mehmalat\ExcelImporter\Service\ExcelImportService;
+use Mehmalat\ExcelImporter\Repository\DatabaseRepository;
 
+// Excel-Dateipfad (Anpassen, wenn du einen anderen Dateinamen/Pfad hast)
 $excelFile = __DIR__ . '/../uploads/example.xlsx';
 
 try {
-    $spreadsheet = IOFactory::load($excelFile);
-    $sheet = $spreadsheet->getActiveSheet();
+    // Service-Objekt erzeugen und Repository übergeben (Dependency Injection)
+    $service = new ExcelImportService(new DatabaseRepository());
+    
+    // Starte den Importvorgang
+    $service->importFromFile($excelFile);
 
-    $importer = new ExcelImporter();
-
-    foreach ($sheet->getRowIterator() as $row) {
-        $data = [];
-        foreach ($row->getCellIterator() as $cell) {
-            $data[] = $cell->getFormattedValue();
-        }
-
-        // Zeile an die Importer-Klasse übergeben
-        $importer->import($data);
-    }
+    // Ausgabe bei Erfolg
+    echo "✅ Import abgeschlossen! Überprüfe die Datei import.log\n";
 } catch (Exception $e) {
-    echo "❌ Fehler beim Einlesen der Excel-Datei: " . $e->getMessage();
+    // Fehlerausgabe, falls Import fehlschlägt
+    echo "❌ Fehler beim Import: " . $e->getMessage() . "\n";
 }
+

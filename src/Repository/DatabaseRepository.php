@@ -5,9 +5,8 @@ class DatabaseRepository
 {
     public function save(array $data)
     {
-        // Hier wird später wirklich in die DB gespeichert
-        echo "Würde speichern: " . json_encode($data) . "\n";
+        // Loggt jede importierte Zeile in eine Datei
+        $logfile = __DIR__ . '/../../import.log';
+        file_put_contents($logfile, implode(';', $data) . PHP_EOL, FILE_APPEND);
     }
 }
-
-
